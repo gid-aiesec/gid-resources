@@ -1,0 +1,23 @@
+# Environments
+.venv/
+venv/
+.env
+
+# IDE & Workspace
+.vscode/
+.idea/
+notes.txt
+
+# Linting & Type Checking
+.ruff_cache/
+.mypy_cache/
+
+# Python
+__pycache__/
+
+# OS
+.DS_Store
+
+# Claude Code
+CLAUDE.md
+.claude/
