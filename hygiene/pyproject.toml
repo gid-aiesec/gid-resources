@@ -1,0 +1,24 @@
+[project]
+name = "gid-hygiene"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Armaan Jhanji", email = "armaanj32@gmail.com" }
+]
+requires-python = ">=3.11"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.3,<0.13.0"]
+build-backend = "uv_build"
+
+[project.urls]
+Homepage = "https://github.com/gid-aiesec/gid-resources"
+
+[tool.uv]
+package = true
