@@ -1,0 +1,23 @@
+#!/bin/sh
+# Enforce branch naming: author/prefix-short-desc (main and staging exempt)
+# prefix must be one of: feature, fix, chore, docs, refactor, hotfix, test, perf, style, ci
+# Mirrors hygiene/hooks/hygiene/branch_name.py's CI-side check -- keep the prefix list in sync with both.
+
+branch=$(git rev-parse --abbrev-ref HEAD)
+
+if [ "$branch" = "main" ] || [ "$branch" = "staging" ]; then
+    exit 0
+fi
+
+pattern='^[a-z0-9]+/(feature|fix|chore|docs|refactor|hotfix|test|perf|style|ci)-[a-z0-9]+(-[a-z0-9]+)*$'
+
+if ! echo "$branch" | grep -Eq "$pattern"; then
+    echo "Error: branch name '$branch' doesn't match the required format." >&2
+    echo "Expected: author/prefix-short-desc" >&2
+    echo "  author     = your name/handle, lowercase alphanumeric" >&2
+    echo "  prefix     = one of: feature, fix, chore, docs, refactor, hotfix, test, perf, style" >&2
+    echo "  short-desc = lowercase, hyphen-separated" >&2
+    exit 1
+fi
+
+exit 0
