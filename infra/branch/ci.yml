@@ -1,0 +1,28 @@
+name: Code Quality
+
+on:
+  pull_request:
+    branches:
+      - staging
+      - main
+  workflow_call: # lets another workflow (e.g. a combined ci.yml) run this as a job instead of its own trigger
+
+jobs:
+  branch-checks:
+    name: Branch Checks
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Backend # CONFIGURE: directory containing your pyproject.toml (branchcheck needs uv)
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          cache-python: "true"
+
+      - name: Run branch naming and repo-wide file hygiene checks
+        run: uv run branchcheck --check

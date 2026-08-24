@@ -1,0 +1,41 @@
+name: Code Quality
+
+on:
+  pull_request:
+    branches:
+      - staging
+      - main
+  workflow_call: # lets another workflow (e.g. a combined ci.yml) run this as a job instead of its own trigger
+
+jobs:
+  backend-checks:
+    name: Backend Checks
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Backend # CONFIGURE: directory containing your pyproject.toml
+    env:
+      # CONFIGURE: environment variables your app needs to import cleanly during type checking
+      # EXAMPLE_VAR: value
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          cache-python: "true"
+
+      - name: Cache mypy
+        uses: actions/cache@v6
+        with:
+          path: Backend/.mypy_cache # CONFIGURE: match working-directory above
+          key: mypy-${{ runner.os }}-${{ hashFiles('Backend/uv.lock', 'Backend/pyproject.toml') }}
+          restore-keys: |
+            mypy-${{ runner.os }}-
+
+      - name: Run pre-commit checks (ruff + mypy + case-conflict + debug-statement checks)
+        run: >-
+          uv run precommit . --check
+          --skip branch_name,markdown,json,toml,yaml,large_file,illegal_windows,eof,whitespace
