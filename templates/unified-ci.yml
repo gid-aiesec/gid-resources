@@ -1,0 +1,84 @@
+name: Code Quality
+
+on:
+  pull_request:
+    branches:
+      - staging
+      - main
+  workflow_call:
+
+jobs:
+  branch-checks:
+    name: Branch Checks
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Backend # CONFIGURE: directory containing your pyproject.toml (branchcheck needs uv)
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          cache-python: "true"
+
+      - name: Run branch naming and repo-wide file hygiene checks
+        run: uv run branchcheck --check
+
+  backend-checks:
+    name: Backend Checks
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Backend # CONFIGURE: directory containing your pyproject.toml
+    env:
+      # CONFIGURE: environment variables your app needs to import cleanly during type checking
+      # EXAMPLE_VAR: value
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          cache-python: "true"
+
+      - name: Cache mypy
+        uses: actions/cache@v6
+        with:
+          path: Backend/.mypy_cache # CONFIGURE: match working-directory above
+          key: mypy-${{ runner.os }}-${{ hashFiles('Backend/uv.lock', 'Backend/pyproject.toml') }}
+          restore-keys: |
+            mypy-${{ runner.os }}-
+
+      - name: Run pre-commit checks (ruff + mypy + case-conflict + debug-statement checks)
+        run: >-
+          uv run precommit . --check
+          --skip branch_name,markdown,json,toml,yaml,large_file,illegal_windows,eof,whitespace
+
+  frontend-checks:
+    name: Frontend Checks
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Frontend # CONFIGURE: directory containing your package.json
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/* # CONFIGURE: pin an exact version if your project needs one
+          cache: npm
+          cache-dependency-path: Frontend/package-lock.json # CONFIGURE: match working-directory above
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run lint, format, typecheck, and file-size checks
+        run: npm run check:ci
