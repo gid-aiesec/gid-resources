@@ -37,3 +37,6 @@ as-is.
 
 ## Developer Guides
 [aies.ec/developer-guides](https://aies.ec/developer-guides)
+
+## License
+[MIT](LICENSE)
