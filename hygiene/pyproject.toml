@@ -7,6 +7,12 @@ authors = [
     { name = "Armaan Jhanji", email = "armaanj32@gmail.com" }
 ]
 requires-python = ">=3.11"
+dependencies = [
+    "mypy>=2.3.1",
+    "pre-commit-hooks>=6.0.0",
+    "pymarkdownlnt>=0.9.39",
+    "ruff>=0.16.4",
+]
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -22,3 +28,39 @@ Homepage = "https://github.com/gid-aiesec/gid-resources"
 
 [tool.uv]
 package = true
+
+[tool.uv.build-backend]
+module-root = "" # flat layout: gid_hygiene/ sits directly here, no src/ indirection
+
+
+# uv run [scripts]
+[project.scripts]
+precommit = "gid_hygiene.pre_commit:main"
+branchcheck = "gid_hygiene.branch_check:main"
+
+
+# Linting with Ruff, target all default rulesets
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "N", "C90", "ARG", "RUF"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 24
+
+
+# Type checking with Mypy, overrides and plugins for modules that don't ship stubs
+[tool.mypy]
+python_version = "3.11"
+strict = true
+
+
+# Markdown linting with PyMarkdown
+[tool.pymarkdown]
+plugins.md013.line_length = 120
+plugins.md013.table_line_length = 500
+plugins.md013.heading_line_length = 120
+plugins.md013.code_block_line_length = 120
+plugins.md033.enabled = false
