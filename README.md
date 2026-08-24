@@ -1,10 +1,10 @@
-<div style="display: flex; justify-content: center;">
+<p align="center">
     <img
         src="assets/GIDlogo2.svg"
         alt="GID Logo"
         width="400"
     />
-</div>
+</p>
 
 # GID Resources
 
